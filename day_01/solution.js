@@ -98,7 +98,6 @@ fs.readFile("data.txt", (err, inputD) => {
       const secondNum = returnLastDigit(str);
       arr.push(firstNum);
       arr.push(secondNum);
-      console.log(arr);
       const num = parseInt(arr[0] + arr[1]);
       result.push(num);
       return result.reduce((a, b) => a + b, 0);
