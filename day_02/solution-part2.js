@@ -10,7 +10,6 @@ const calculateResult = (games) => {
 };
 const biggestColorValues = (colors) => {
   const colorValues = {};
-
   colors.forEach((color) => {
     const [value, colorName] = color.split(" ");
     const numericValue = parseInt(value);
@@ -18,7 +17,6 @@ const biggestColorValues = (colors) => {
       colorValues[colorName] = numericValue;
     }
   });
-
   return colorValues;
 };
 
