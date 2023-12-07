@@ -17,12 +17,9 @@ const calculateDistance = (time, distance) => {
 fs.readFile("data.txt", (err, inputD) => {
   if (err) throw err;
   const lines = inputD.toString().split("\n");
-  const timesOfRace = [...lines[0].split(":")[1].match(/\d+/g)];
-  const distances = [...lines[1].split(":")[1].match(/\d+/g)];
-  const resultArr = [];
-  for (let i = 0; i < timesOfRace.length; i++) {
-    resultArr.push(calculateDistance(timesOfRace[i], distances[i]));
-  }
-  const result = resultArr.reduce((acc, curr) => acc * curr);
-  console.log(result);
+  const timesOfRace = lines[0].split(":")[1];
+  const newTime = timesOfRace.replace(/ /g, "");
+  const distances = lines[1].split(":")[1];
+  const newDistances = distances.replace(/ /g, "");
+  console.log(calculateDistance(newTime, newDistances));
 });
