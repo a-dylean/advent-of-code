@@ -10,11 +10,12 @@ const transformInput = (input) => {
 };
 
 const cardValues = "AKQJT98765432";
-function cardValue(card) {
+
+const cardValue = (card) => {
   return cardValues.length - cardValues.indexOf(card);
 }
 
-function handType(hand) {
+const handType = (hand) => {
   const cardCounts = {};
   for (const card of hand) {
     cardCounts[card] == undefined
@@ -43,7 +44,7 @@ function handType(hand) {
   return 1;
 }
 
-function compareHands(hand1, hand2) {
+const compareHands = (hand1, hand2) => {
   if (handType(hand1) > handType(hand2)) return 1;
   if (handType(hand1) < handType(hand2)) return -1;
   for (const i in hand1) {
