@@ -9,207 +9,53 @@ const transformInput = (input) => {
   return result;
 };
 
-const defineType = (hand) => {
-  if (hand.split("").every((char) => char === hand.charAt(0))) {
-    return 7;
+const cardValues = "AKQJT98765432";
+function cardValue(card) {
+  return cardValues.length - cardValues.indexOf(card);
+}
+
+function handType(hand) {
+  const cardCounts = {};
+  for (const card of hand) {
+    cardCounts[card] == undefined
+      ? (cardCounts[card] = 1)
+      : (cardCounts[card] += 1);
   }
-  if (fourOutOfFiveSame(hand)) {
-    return 6;
-  }
-  if (threeAndTwoOutOfFiveSame(hand)) {
+  const keys = Object.keys(cardCounts);
+  if (keys.length === 1) return 7;
+  if (keys.length === 2) {
+    for (const key of keys) {
+      if (cardCounts[key] === 4) {
+        return 6;
+      }
+    }
     return 5;
   }
-  if (threeOutOfFiveSame(hand)) {
-    return 4;
-  }
-  if (twoPairsOfSameChars(hand)) {
+  if (keys.length === 3) {
+    for (const key of keys) {
+      if (cardCounts[key] === 3) {
+        return 4;
+      }
+    }
     return 3;
   }
-  if (twoOutOfFiveSame(hand)) {
-    return 2;
-  } else {
-    return 1;
+  if (keys.length === 4) return 2;
+  return 1;
+}
+
+function compareHands(hand1, hand2) {
+  if (handType(hand1) > handType(hand2)) return 1;
+  if (handType(hand1) < handType(hand2)) return -1;
+  for (const i in hand1) {
+    if (cardValue(hand1[i]) === cardValue(hand2[i])) continue;
+    if (cardValue(hand1[i]) > cardValue(hand2[i])) return 1;
+    return -1;
   }
-};
+}
 
 fs.readFile("data.txt", (err, inputD) => {
   if (err) throw err;
   const hands = transformInput(inputD.toString());
-  const values = [
-    "A",
-    "K",
-    "Q",
-    "J",
-    "T",
-    "9",
-    "8",
-    "7",
-    "6",
-    "5",
-    "4",
-    "3",
-    "2",
-  ];
-  const fiveOfaKind = [];
-  const fourOfaKind = [];
-  const fullHouse = [];
-  const threeOfaKind = [];
-  const twoPair = [];
-  const onePair = [];
-  const highCard = [];
-  hands.forEach((hand) => {
-    hand.type = defineType(hand.hand);
-  });
-  hands.forEach((hand) => {
-    if (hand.type === 7) {
-      fiveOfaKind.push(hand);
-    }
-    if (hand.type === 6) {
-      fourOfaKind.push(hand);
-    }
-    if (hand.type === 5) {
-      fullHouse.push(hand);
-    }
-    if (hand.type === 4) {
-      threeOfaKind.push(hand);
-    }
-    if (hand.type === 3) {
-      twoPair.push(hand);
-    }
-    if (hand.type === 2) {
-      onePair.push(hand);
-    }
-    if (hand.type === 1) {
-      highCard.push(hand);
-    }
-  });
-  const sortByObject = values.reduce((obj, item, index) => {
-    return {
-      ...obj,
-      [item]: index,
-    };
-  }, {});
-  const fiveOfaKindSorted = fiveOfaKind.sort(
-    (a, b) => sortByObject[a.hand[0]] - sortByObject[b.hand[0]]
-  );
-  const fourOfaKindSorted = fourOfaKind.sort(
-    (a, b) => sortByObject[a.hand[0]] - sortByObject[b.hand[0]]
-  );
-  const fullHouseSorted = fullHouse.sort(
-    (a, b) => sortByObject[a.hand[0]] - sortByObject[b.hand[0]]
-  );
-  const threeOfaKindSorted = threeOfaKind.sort(
-    (a, b) => sortByObject[a.hand[0]] - sortByObject[b.hand[0]]
-  );
-  const twoPairSorted = twoPair.sort(
-    (a, b) => sortByObject[a.hand[0]] - sortByObject[b.hand[0]]
-  );
-  const onePairSorted = onePair.sort(
-    (a, b) => sortByObject[a.hand[0]] - sortByObject[b.hand[0]]
-  );
-  const highCardSorted = highCard.sort(
-    (a, b) => sortByObject[a.hand[0]] - sortByObject[b.hand[0]]
-  );
-  const result = [
-    ...fiveOfaKindSorted,
-    ...fourOfaKindSorted,
-    ...fullHouseSorted,
-    ...threeOfaKindSorted,
-    ...twoPairSorted,
-    ...onePairSorted,
-    ...highCardSorted,
-  ];
-  const totalWinnings = [];
-
-  const reversedResult = [...result].reverse();
-  reversedResult.forEach((hand, index) => {
-    totalWinnings.push(hand.bid * (index + 1));
-  });
-  console.log(Math.max(...totalWinnings));
-  console.log((totalWinnings.reduce((acc, curr) => acc + curr)));
+  hands.sort((a, b) => compareHands(a.hand, b.hand));
+  console.log(hands.reduce((acc, val, idx) => acc + val.bid * (idx + 1), 0));
 });
-
-function fourOutOfFiveSame(str) {
-  const charCount = {};
-  for (let i = 0; i < str.length; i++) {
-    if (!charCount[str[i]]) {
-      charCount[str[i]] = 1;
-    } else {
-      charCount[str[i]]++;
-    }
-  }
-  const counts = Object.values(charCount);
-  const uniqueCounts = new Set(counts);
-  return uniqueCounts.has(4);
-}
-
-function threeAndTwoOutOfFiveSame(str) {
-  const charCount = {};
-  for (let i = 0; i < str.length; i++) {
-    if (!charCount[str[i]]) {
-      charCount[str[i]] = 1;
-    } else {
-      charCount[str[i]]++;
-    }
-  }
-  const counts = Object.values(charCount);
-  const uniqueCounts = new Set(counts);
-  if (uniqueCounts.size === 2) {
-    const [count1, count2] = uniqueCounts;
-    return (count1 === 2 && count2 === 3) || (count1 === 3 && count2 === 2);
-  }
-  return false;
-}
-
-function threeOutOfFiveSame(str) {
-  const charCount = {};
-
-  for (let i = 0; i < str.length; i++) {
-    if (!charCount[str[i]]) {
-      charCount[str[i]] = 1;
-    } else {
-      charCount[str[i]]++;
-    }
-  }
-
-  const counts = Object.values(charCount);
-  const uniqueCounts = new Set(counts);
-  return uniqueCounts.has(3);
-}
-
-function twoPairsOfSameChars(str) {
-  const charCount = {};
-
-  for (let i = 0; i < str.length; i++) {
-    if (!charCount[str[i]]) {
-      charCount[str[i]] = 1;
-    } else {
-      charCount[str[i]]++;
-    }
-  }
-
-  let pairsCount = 0;
-  for (const char in charCount) {
-    if (charCount[char] === 2) {
-      pairsCount++;
-    }
-  }
-
-  return pairsCount === 2;
-}
-
-function twoOutOfFiveSame(str) {
-  const charCount = {};
-
-  for (let i = 0; i < str.length; i++) {
-    if (!charCount[str[i]]) {
-      charCount[str[i]] = 1;
-    } else {
-      charCount[str[i]]++;
-    }
-  }
-
-  const counts = Object.values(charCount);
-  const uniqueCounts = new Set(counts);
-  return uniqueCounts.has(2);
-}
