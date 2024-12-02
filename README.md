@@ -1,6 +1,6 @@
-## ‎₊˚✧ Advent of code 2023 ✧˚₊
+## ‎₊˚✧ Advent of code ✧˚₊
 
-My solutions for the [Advent of code 2023](https://adventofcode.com/)
+My solutions for the [Advent of code](https://adventofcode.com/)
 
 Run using node, e.g.
 ```
