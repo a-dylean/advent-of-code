@@ -7,7 +7,6 @@ function isAscending(nums: number[]): boolean {
     for (let i: number = 0, l = nums.length - 1; i < l; i++) {
         isAsc = isAsc && (nums[i] < nums[i+1]);
     }
-    console.log(`${nums}: ${isAsc}`);
     return isAsc;
 }
 
@@ -16,13 +15,11 @@ function isDescending(nums: number[]): boolean {
     for (let i: number = 0, l = nums.length - 1; i < l; i++) {
         isDesc = isDesc && (nums[i] > nums[i+1]);
     }
-    console.log(`${nums}: ${isDesc}`);
     return isDesc;
 }
 
 function checkConditions(report : string): boolean {
     const nums = report.split(' ').map(item => Number(item));
-    console.log(nums);
     for (let i: number = 0; i < nums.length; i++) {
         if (nums[i + 1] && (Math.abs(nums[i + 1] - nums[i]) > 3 || Math.abs(nums[i + 1] - nums[i]) < 1))
             return false;
