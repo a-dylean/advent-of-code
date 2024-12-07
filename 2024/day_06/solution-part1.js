@@ -13,15 +13,7 @@ function getPos(map) {
     }
     return [0, 0];
 }
-function getCount(lines, i, j, count, finish, dir) {
-    var result;
-    if (finish)
-        return count;
-    result = calculateCount(lines, dir, i, j, count);
-    count += result.count;
-    getCount(lines, result.i, result.j, result.count, result.finish, result.newDir);
-}
-function calculateCount(lines, dir, i, j, count) {
+function calculateCount(lines, dir, i, j) {
     var finish = false;
     var newDir;
     if (dir == "^") {
@@ -29,7 +21,6 @@ function calculateCount(lines, dir, i, j, count) {
         while (lines[i - 1][j] != "#") {
             lines[i][j] = "X";
             i--;
-            count++;
             if (!lines[i - 1]) {
                 finish = true;
                 break;
@@ -41,7 +32,6 @@ function calculateCount(lines, dir, i, j, count) {
         while (lines[i][j + 1] != "#") {
             lines[i][j] = "X";
             j++;
-            count++;
             if (!lines[i][j + 1]) {
                 finish = true;
                 break;
@@ -53,7 +43,6 @@ function calculateCount(lines, dir, i, j, count) {
         while (lines[i + 1][j] != "#") {
             lines[i][j] = "X";
             i++;
-            count++;
             if (!lines[i + 1]) {
                 finish = true;
                 break;
@@ -65,16 +54,22 @@ function calculateCount(lines, dir, i, j, count) {
         while (lines[i][j - 1] != "#") {
             lines[i][j] = "X";
             j--;
-            count++;
             if (!lines[i][j - 1]) {
                 finish = true;
                 break;
             }
         }
     }
-    return { i: i, j: j, count: count, finish: finish, newDir: newDir };
+    return { i: i, j: j, finish: finish, newDir: newDir };
 }
-console.log(getCount(lines, getPos(lines)[0], getPos(lines)[1], 0, false, '^'));
+function createRoute(lines, i, j, finish, dir) {
+    var result;
+    if (finish)
+        return;
+    result = calculateCount(lines, dir, i, j);
+    createRoute(lines, result.i, result.j, result.finish, result.newDir);
+}
+createRoute(lines, getPos(lines)[0], getPos(lines)[1], false, "^");
 var sum = 1;
 for (var i = 0; i < lines.length; i++) {
     for (var j = 0; j < lines[i].length; j++) {
