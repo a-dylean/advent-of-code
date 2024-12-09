@@ -1,40 +1,51 @@
 import * as fs from "fs";
-const data: string = fs.readFileSync("./data_example", "utf-8");
-// const data = "12345";
-console.log(data)
+const data: string = fs.readFileSync("./data", "utf-8");
 
-// interface File {
-//     id: number;
-//     value: number;
-// }
-let files: number[] = [];
-let empty: number[] = [];
+const empty: number[] = [];
+const blocks: any[] = [];
 
-for (let i = -1; i < data.length; i++) {
-    i++;
-    files.push(Number(data.charAt(i)));
-}
+let isFileBlock = true;
+let currentIdNumber = 0;
 for (let i = 0; i < data.length; i++) {
-    i++;
-    empty.push(Number(data.charAt(i)));
-}
-const newFiles = files.map((value, index) => index.toString().repeat(value));
-const newEmpty = empty.map((value) => '.'.repeat(value));
-
-const interleaved: (number | string)[] = [];
-const maxLength = Math.max(newFiles.length, newEmpty.length);
-
-for (let i = 0; i < maxLength; i++) {
-  if (i < newFiles.length) interleaved.push(newFiles[i]);
-  if (i < newEmpty.length) interleaved.push(newEmpty[i]);
-}
-let result = [...interleaved.join('')]
-
-for (let i = 0; i < result.length; i++) {
-    if (result[i] == '0') continue;
-    if (result[i] == '.') {
-        result[i] = result[result.length - i]
+  const blockSize = Number(data[i]);
+  if (isFileBlock) {
+    for (let j = 0; j < blockSize; j++) {
+      blocks.push(currentIdNumber);
     }
+    currentIdNumber++;
+  } else {
+    for (let j = 0; j < blockSize; j++) {
+      blocks.push(".");
+      empty.push(blocks.length - 1);
+    }
+  }
+  isFileBlock = !isFileBlock;
 }
-console.log(newFiles);
-console.log(result)
+
+let currentFreeSpaceIndex = empty.shift()!;
+let currentFileBlockIndex = blocks.length - 1;
+
+while (currentFileBlockIndex > currentFreeSpaceIndex) {
+  const block = blocks[currentFileBlockIndex];
+  if (block === ".") {
+    currentFileBlockIndex--;
+    continue;
+  }
+
+  blocks[currentFreeSpaceIndex] = blocks[currentFileBlockIndex];
+  blocks[currentFileBlockIndex] = ".";
+  empty.push(currentFileBlockIndex);
+
+  currentFileBlockIndex--;
+  currentFreeSpaceIndex = empty.shift()!;
+}
+
+let checkSum = 0;
+for (let i = 0; i < blocks.length; i++) {
+  if (blocks[i] === ".") {
+    break;
+  }
+  checkSum += i * Number(blocks[i]);
+}
+
+console.log(checkSum);
